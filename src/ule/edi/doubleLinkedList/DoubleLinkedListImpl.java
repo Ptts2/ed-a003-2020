@@ -144,6 +144,12 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			throw new EmptyCollectionException("Empty list");
 		
 		T elem = this.front.elem;
+		
+		if(this.front == this.last) {
+			this.front = null;
+			this.last = null;
+			return elem;
+		}
 			
 		this.front = this.front.next;
 		this.front.prev=null;
@@ -159,7 +165,13 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 			throw new EmptyCollectionException("Empty list");
 		
 		T elem = this.last.elem;
-			
+				
+		if(this.last == this.front) {
+			this.front = null;
+			this.last = null;
+			return elem;
+		}
+
 		this.last = this.last.prev;
 		this.last.next=null;
 			
@@ -174,7 +186,6 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		if(position <=0)
 			throw new IllegalArgumentException();
 	
-		
 		if(position > this.size()) {
 			this.insertLast(elem);
 		}else if(position == 1) {
@@ -200,50 +211,147 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public void insertBefore(T elem, T target) {
-		// TODO Auto-generated method stub
+		if(elem == null)
+			throw new NullPointerException();
 		
+			int pos = this.getPosFirst(target)-1;
+			
+			if(pos == 0) {
+				this.insertFirst(elem);
+			}else if(pos == this.size()) {
+				this.insertLast(elem);
+			}else {
+				this.insertPos(elem,pos);
+			}
 	}
 
 
 	@Override
 	public T getElemPos(int position) {
-		// TODO Auto-generated method stub
-		return null;
+		if(position < 1 || position > size())
+			throw new IllegalArgumentException();
+		
+		DoubleNode<T> aux = this.front;
+		for(int i = 0 ; i < position ; i++) {
+			aux = aux.next;
+		}
+		return aux.elem;
 	}
 
 
 	@Override
 	public int getPosFirst(T elem) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		DoubleNode<T> aux = this.front;
+		int pos = 1;
+		boolean found = false;
+		
+		while(aux != null && !found) {
+			if(aux.elem == elem)
+				found = true;
+			else {
+				aux = aux.next;
+				pos++;
+			}
+		}
+		
+		if(!found)
+			throw new NoSuchElementException();
+		
+		return pos;
 	}
 
 
 	@Override
 	public int getPosLast(T elem) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		DoubleNode<T> aux = this.last;
+		int pos = size();
+		boolean found = false;
+		
+		while(aux != null && !found) {
+			if(aux.elem == elem)
+				found = true;
+			else {
+				aux = aux.prev;
+				pos--;
+			}
+		}
+		
+		if(!found)
+			throw new NoSuchElementException();
+		
+		return pos;
 	}
 
 
 	@Override
-	public T removePos(int pos) {
-		// TODO Auto-generated method stub
-		return null;
+	public T removePos(int pos){
+		
+		if(pos < 1 || pos > size())
+			throw new IllegalArgumentException();
+		
+		if(pos == 1)
+			try{return this.removeFirst();}catch(Exception e) {}
+		if(pos == this.size())
+			try{return this.removeLast();}catch(Exception e) {}
+		
+		
+		DoubleNode<T> aux = this.front;
+		int i = 0;
+		while(aux!=null && i < pos-1) {
+			aux = aux.next;
+			i++;
+		}
+		
+		if(aux == null) {
+			return null;
+		} else {
+			
+			T elem = aux.elem;
+			aux.next.prev = aux.prev;
+			aux.prev.next = aux.next;
+			return elem;
+		}
 	}
 
 
 	@Override
 	public int removeAll(T elem) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		if(elem == null)
+			throw new NullPointerException();
+		
+		int nApar = 0;
+		
+		while(this.contains(elem)) {
+
+			this.removePos(this.getPosFirst(elem));
+			nApar++;
+		}
+		
+		if(nApar == 0)
+			throw new NoSuchElementException();
+		
+		return nApar;
 	}
 
 
 	@Override
 	public boolean contains(T elem) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		if(elem == null)
+			throw new NullPointerException();
+		
+		DoubleNode<T> aux = this.front;
+		boolean exists = false;
+		
+		while(aux != null && !exists) {
+			if(aux.elem == elem)
+				exists = true;
+			aux = aux.next;
+		}
+		return exists;
 	}
 
 
@@ -264,8 +372,17 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public String toStringReverse() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		StringBuilder output = new StringBuilder();
+		output.append("(");
+		
+		DoubleNode<T> aux = this.last;
+		while(aux!=null) {
+			output.append(aux.elem.toString()+" ");
+			aux = aux.prev;
+		}
+		output.append(")");
+		return output.toString();
 	}
 
 	@Override
@@ -311,8 +428,17 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-     return null;
+		StringBuilder output = new StringBuilder();
+		output.append("(");
+		
+		DoubleNode<T> aux = this.front;
+		while(aux!=null) {
+			output.append(aux.elem.toString()+" ");
+			aux = aux.next;
+		}
+		output.append(")");
+		return output.toString();
+
 	}
 
 	@Override
