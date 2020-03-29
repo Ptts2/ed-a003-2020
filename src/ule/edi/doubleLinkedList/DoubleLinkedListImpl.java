@@ -145,7 +145,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		
 		T elem = this.front.elem;
 		
-		if(this.front == this.last) {
+		if(this.size()==1) {
 			this.front = null;
 			this.last = null;
 			return elem;
@@ -166,7 +166,7 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		
 		T elem = this.last.elem;
 				
-		if(this.last == this.front) {
+		if(this.size()==1) {
 			this.front = null;
 			this.last = null;
 			return elem;
@@ -216,13 +216,11 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		
 			int pos = this.getPosFirst(target)-1;
 			
-			if(pos == 0) {
-				this.insertFirst(elem);
-			}else if(pos == this.size()) {
-				this.insertLast(elem);
-			}else {
+			if(pos == 0)
+				this.insertFirst(elem);	
+			else 
 				this.insertPos(elem,pos);
-			}
+			
 	}
 
 
@@ -290,7 +288,6 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		
 		if(pos < 1 || pos > size())
 			throw new IllegalArgumentException();
-		
 		if(pos == 1)
 			try{return this.removeFirst();}catch(Exception e) {}
 		if(pos == this.size())
@@ -299,20 +296,16 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		
 		DoubleNode<T> aux = this.front;
 		int i = 0;
-		while(aux!=null && i < pos-1) {
+		while(i < pos-1) {
 			aux = aux.next;
 			i++;
 		}
+	
+		T elem = aux.elem;
+		aux.next.prev = aux.prev;
+		aux.prev.next = aux.next;
+		return elem;
 		
-		if(aux == null) {
-			return null;
-		} else {
-			
-			T elem = aux.elem;
-			aux.next.prev = aux.prev;
-			aux.prev.next = aux.next;
-			return elem;
-		}
 	}
 
 
@@ -387,43 +380,166 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public DoubleList<T> reverse() {
-		// TODO Auto-generated method stub
-		return null;
+		DoubleLinkedListImpl<T> reverse = new DoubleLinkedListImpl<T>();
+		
+		DoubleNode<T> aux = this.front;
+		while(aux!=null) {
+			reverse.insertFirst(aux.elem);
+			aux = aux.next;
+		}
+		
+		return reverse;
 	}
 
 
 	@Override
 	public int maxRepeated() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		int maxRepeticiones = 1, tempCount;
+		T elemMasRepetido;
+		DoubleNode<T> aux = this.front;
+		
+		while(aux!=null) {
+			
+			elemMasRepetido = aux.elem;
+			tempCount = 0;
+			DoubleNode<T> aux2 = aux;
+			
+			while(aux2!=null) {
+				
+				if(elemMasRepetido.equals(aux2.elem)) 
+					tempCount++;
+				
+				aux2 = aux2.next;
+			}
+			
+			if(tempCount>maxRepeticiones) 
+				maxRepeticiones = tempCount;
+			
+			aux = aux.next;
+		}
+		
+		return maxRepeticiones;
 	}
 
 
 	@Override
 	public boolean isEquals(DoubleList<T> other) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		if(other == null)
+			throw new NullPointerException();
+		
+		boolean equal = true;
+		DoubleNode<T> aux = this.front;
+		DoubleLinkedListImpl<T> otherL = (DoubleLinkedListImpl<T>) other;
+		DoubleNode<T> auxOth = otherL.front;
+		
+		if(this.size() != otherL.size())
+			return false;
+		
+		while(equal && aux!=null) {
+			
+			if( !(aux.elem.equals(auxOth.elem)) ) {
+				equal = false;
+			}
+			
+			aux = aux.next;
+			auxOth = auxOth.next;
+		}
+		
+		return equal;
 	}
 
 
 	@Override
 	public boolean containsAll(DoubleList<T> other) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		if(other == null)
+			throw new NullPointerException();
+		
+		boolean containsAll = true;
+		DoubleLinkedListImpl<T> otherL = (DoubleLinkedListImpl<T>) other;
+		DoubleNode<T> auxOth = otherL.front;
+		
+		while(auxOth!=null && containsAll) {
+			
+			boolean containThis = false;
+			DoubleNode<T> aux = this.front;
+			while(aux!=null && !containThis) {
+				
+				if(aux.elem.equals(auxOth.elem))
+					containThis = true;
+				
+				aux = aux.next;
+			}
+			
+			if(!containThis)
+				containsAll = false;
+			
+			auxOth = auxOth.next;
+		}
+		
+
+		return containsAll;
 	}
 
 
 	@Override
 	public boolean isSubList(DoubleList<T> other) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		if(other == null)
+			throw new NullPointerException();
+		
+		boolean isSubList = false;
+		DoubleLinkedListImpl<T> otherL = (DoubleLinkedListImpl<T>) other;
+		DoubleNode<T> aux = this.front;
+		
+		if(otherL.isEmpty())
+			return true;
+		if(!this.containsAll(otherL))
+			return false;
+		
+		while(aux!= null && !isSubList) {
+			
+			isSubList = true;
+			DoubleNode<T> aux2 = aux;
+			DoubleNode<T> auxOth = otherL.front;
+			while(auxOth!=null && isSubList) {
+				
+				if(!auxOth.elem.equals(aux2.elem))
+					isSubList=false;
+				
+				auxOth = auxOth.next;
+				aux2 = aux2.next;
+			}
+			
+			aux = aux.next;
+		}
+		
+		return isSubList;
 	}
 
 
 	@Override
 	public String toStringFromUntil(int from, int until) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if(from <=0 || until <=0 || until<from)
+			throw new IllegalArgumentException();
+		
+		if(until>size())
+			until = size();
+		if(from>size())
+			return "()";
+			
+		StringBuilder output = new StringBuilder();
+		output.append("(");
+		
+		for(int i = from-1; i<until; i++) {
+			output.append(this.getElemPos(i).toString()+" ");	
+		}
+		output.append(")");
+		return output.toString();
+		
 	}
 	
 	@Override
