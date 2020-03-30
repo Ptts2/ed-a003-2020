@@ -29,45 +29,154 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 	    DoubleNode<T> prev;
 	}
 
-///// ITERADOR normal //////////
+	///// ITERADOR normal //////////
 
 	@SuppressWarnings("hiding")
 	private class DobleLinkedListIterator<T> implements Iterator<T> {
-		  // añadir atributos
-	 
 		
+		private DoubleNode<T> actual;
        	
 		public DobleLinkedListIterator(DoubleNode<T> nodo) {
-			// todo
-			
-				}
+			this.actual = nodo;
+		}
 		
 		@Override
 		public boolean hasNext() {
 			
-			// todo
-			return false;
+			return actual!=null;
 		}
 
 		@Override
 		public T next() {
-			// todo
-
-			return null;
 			
-				}
+			if(!this.hasNext()) 
+				throw new NoSuchElementException();
+			
+			DoubleNode<T> aux = this.actual;
+			this.actual = this.actual.next;
+			return aux.elem;
+			
+		}
+	}
+	
+	////// FIN ITERATOR NORMAL //////////
+	
+	///// REVERSE ITERATOR //////////
+	
+	@SuppressWarnings("hiding")
+	private class DobleLinkedListReverseIterator<T> implements Iterator<T> {
+		
+		private DoubleNode<T> actual;
+       	
+		public DobleLinkedListReverseIterator(DoubleNode<T> nodo) {
+			this.actual = nodo;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			
+			return actual!=null;
+		}
+
+		@Override
+		public T next() {
+			
+			if(!this.hasNext()) 
+				throw new NoSuchElementException();
+			
+			DoubleNode<T> aux = this.actual;
+			this.actual = this.actual.prev;
+			return aux.elem;
+			
+		}
 
 		
 	}
 	
-	////// FIN ITERATOR
+	//////FIN REVERSE ITERATOR //////////
 	
+	///// EVEN POSITIONS ITERATOR //////////
 	
+	@SuppressWarnings("hiding")
+	private class DobleLinkedListEvenPosIterator<T> implements Iterator<T> {
+	 
+		private DoubleNode<T> actual;
+		
+		public DobleLinkedListEvenPosIterator(DoubleNode<T> nodo) {
+			
+			if(nodo == null)
+				this.actual = null;
+			else
+				this.actual = nodo.next;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			
+			return actual!=null;
+		}
+
+		@Override
+		public T next() {
+			
+			if(!this.hasNext()) 
+				throw new NoSuchElementException();
+			
+			DoubleNode<T> aux = this.actual;
+			if(actual.next == null)
+				this.actual = null;
+			else
+				this.actual = this.actual.next.next;
+			
+			return aux.elem;
+		}
+
+		
+	}
 	
-	/// TODO :  AÑADIR OTRAS CLASES PARA LOS OTROS 3 ITERADORES
+	//////FIN EVEN POSITIONS ITERATOR //////////
 	
+	///// PROGRESS ITERATOR //////////
 	
-    /////
+	@SuppressWarnings("hiding")
+	private class DobleLinkedListProgressIterator<T> implements Iterator<T> {
+	 
+		private DoubleNode<T> actual;
+		private int saltos;
+		
+		public DobleLinkedListProgressIterator(DoubleNode<T> nodo) {
+			
+			this.actual = nodo;
+			this.saltos = 0;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			
+			return actual!=null;
+		}
+
+		@Override
+		public T next() {
+			
+			if(!this.hasNext()) 
+				throw new NoSuchElementException();
+			
+			DoubleNode<T> aux = this.actual;
+			saltos++;
+			int i = 0;
+			while(actual != null && i<saltos) {
+				actual = actual.next;
+				i++;
+			}
+			
+			return aux.elem;
+			
+		}
+		
+	}
+	
+	//////FIN PROGRESS ITERATOR //////////
 	
 	public DoubleLinkedListImpl() {
 		this.front = null;
@@ -289,9 +398,9 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 		if(pos < 1 || pos > size())
 			throw new IllegalArgumentException();
 		if(pos == 1)
-			try{return this.removeFirst();}catch(Exception e) {}
+			try{return this.removeFirst();}catch(Exception e) {/*No entra nunca*/}
 		if(pos == this.size())
-			try{return this.removeLast();}catch(Exception e) {}
+			try{return this.removeLast();}catch(Exception e) {/*No entra nunca*/}
 		
 		
 		DoubleNode<T> aux = this.front;
@@ -559,28 +668,25 @@ public class DoubleLinkedListImpl<T> implements DoubleList<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DobleLinkedListIterator<T>(this.front);
 	}
 
 	@Override
 	public Iterator<T> reverseIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DobleLinkedListReverseIterator<T>(this.last);
 	}
 
 
 	@Override
 	public Iterator<T> evenPositionsIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DobleLinkedListEvenPosIterator<T>(this.front);
+
 	}
 
 
 	@Override
 	public Iterator<T> progressIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DobleLinkedListProgressIterator<T>(this.front);
 	}
 
 

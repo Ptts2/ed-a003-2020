@@ -2,10 +2,10 @@ package ule.edi.doubleLinkedList;
 
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.junit.*;
-
 import ule.edi.exceptions.EmptyCollectionException;
 
 public class DoubleLinkedImplTest {
@@ -344,5 +344,134 @@ public void antesDe() {
 	@Test(expected = IllegalArgumentException.class)
 	public void toStringFromUntilTestExcp3() {
 		listaConElems.toStringFromUntil(7,2);
+	}
+	
+	//Test iteradores
+	
+	@Test
+	public void normalIteratorTest() {
+		
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		
+		Iterator<String> iterador = lista.iterator();
+		
+		int i = 0;
+		while(iterador.hasNext()) {
+			
+			Assert.assertEquals(iterador.next(),"A");
+			i++;
+		}
+		
+		Assert.assertEquals(i,5);
+		Assert.assertFalse(iterador.hasNext());
+		
+		DoubleLinkedListImpl<String> lista2 = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador2 = lista2.iterator();
+		Assert.assertFalse(iterador.hasNext());
+	}
+	
+	@Test
+	public void reverseIteratorTest() {
+		
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		lista.insertFirst("A");
+		
+		Iterator<String> iterador = lista.reverseIterator();
+		
+		int i = 0;
+		while(iterador.hasNext()) {
+			
+			Assert.assertEquals(iterador.next(),"A");
+			i++;
+		}
+		
+		Assert.assertEquals(i,5);
+		Assert.assertFalse(iterador.hasNext());
+		
+		DoubleLinkedListImpl<String> lista2 = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador2 = lista2.reverseIterator();
+		Assert.assertFalse(iterador.hasNext());
+	}
+	
+	@Test
+	public void evenIteratorTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>();
+		
+		lista.insertFirst("E");
+		lista.insertFirst("D");
+		lista.insertFirst("C");
+		lista.insertFirst("B");
+		lista.insertFirst("A");
+		
+		
+		Iterator<String> iterador = lista.evenPositionsIterator();
+		Assert.assertEquals(iterador.next(),"B");
+		Assert.assertEquals(iterador.next(),"D");
+		Assert.assertFalse(iterador.hasNext());
+		
+		lista.insertFirst("F");
+		Iterator<String> iterador2 = lista.evenPositionsIterator();
+		Assert.assertEquals(iterador2.next(),"A");
+		Assert.assertEquals(iterador2.next(),"C");
+		Assert.assertEquals(iterador2.next(),"E");
+		Assert.assertFalse(iterador2.hasNext());
+	}
+	
+	@Test
+	public void progressIteratorTest() {
+		DoubleLinkedListImpl<String> lista = new DoubleLinkedListImpl<String>("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19");
+		Iterator<String> iterador = lista.progressIterator();
+		
+		Assert.assertEquals(iterador.next(),"1");
+		Assert.assertEquals(iterador.next(),"2");
+		Assert.assertEquals(iterador.next(),"4");
+		Assert.assertEquals(iterador.next(),"7");
+		Assert.assertEquals(iterador.next(),"11");
+		Assert.assertEquals(iterador.next(),"16");
+		Assert.assertFalse(iterador.hasNext());
+		
+	}
+	
+	//Excepciones iteradores
+	
+	@Test(expected=NoSuchElementException.class)
+	public void normalIteratorTestExcp() {
+		
+		DoubleLinkedListImpl<String> listaVacia = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador = listaVacia.iterator();
+		iterador.next();
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void reverseIteratorTestExcp() {
+		
+		DoubleLinkedListImpl<String> listaVacia = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador = listaVacia.reverseIterator();
+		iterador.next();
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void evenIteratorTestExcp() {
+		
+		DoubleLinkedListImpl<String> listaVacia = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador = listaVacia.evenPositionsIterator();
+		iterador.next();
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void progressIteratorTestExcp() {
+		
+		DoubleLinkedListImpl<String> listaVacia = new DoubleLinkedListImpl<String>();
+		Iterator<String> iterador = listaVacia.progressIterator();
+		iterador.next();
 	}
 }
